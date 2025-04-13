@@ -10,11 +10,11 @@ import React, {
 
 const defaults: ConfigType = {
   url: "http://localhost",
-  port: "8080",
+  port: "5000",
   createPath: "create-videos",
   cganPath: "cgan-video",
   cvaePath: "cvae-video",
-  fusedPath: "fused-video",
+  fusedPath: "fuse-video",
 };
 
 interface AppState {

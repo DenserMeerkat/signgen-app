@@ -1,6 +1,6 @@
 import React from "react";
-import { ModeToggle } from "./common/mode-toggle";
-import SettingsDialog from "./common/config-dialog";
+import { ModeToggle } from "./header/mode-toggle";
+import SettingsDialog from "./header/config-dialog";
 
 const Header = () => {
   return (
