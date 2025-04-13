@@ -23,6 +23,7 @@ export default function ConfigDialog() {
   const [newConfig, setNewConfig] = useState({
     url: config.url,
     port: config.port,
+    createPath: config.createPath,
     cganPath: config.cganPath,
     cvaePath: config.cvaePath,
     fusedPath: config.fusedPath,
@@ -41,6 +42,9 @@ export default function ConfigDialog() {
         break;
       case "port":
         setNewConfig({ ...config, port: value });
+        break;
+      case "createPath":
+        setNewConfig({ ...config, createPath: value });
         break;
       case "cganPath":
         setNewConfig({ ...config, cganPath: value });
@@ -106,6 +110,16 @@ export default function ConfigDialog() {
               </div>
             </div>
             <p className="pt-0.5 text-end text-sm tracking-wide italic">{`${newConfig.url}:${newConfig.port}`}</p>
+            <div className="grid gap-3">
+              <Label htmlFor="cganPath-1">Create Skeletons Path</Label>
+              <Input
+                id="createPath-1"
+                name="createPath"
+                defaultValue={newConfig.createPath}
+                onChange={handleChange}
+              />
+            </div>
+            <p className="pt-0.5 text-end text-sm tracking-wide italic">{`${newConfig.url}:${newConfig.port}/${newConfig.createPath}`}</p>
             <div className="grid gap-3">
               <Label htmlFor="cganPath-1">cGAN Skeleton Path</Label>
               <Input
