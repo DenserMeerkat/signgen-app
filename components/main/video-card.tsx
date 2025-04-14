@@ -1,8 +1,7 @@
-"use client";
-
 import { Loader2Icon } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
+import { Skeleton } from "../ui/skeleton";
 
 interface VideoCardProps {
   title: string;
@@ -42,3 +41,12 @@ const VideoCard = ({
 };
 
 export default VideoCard;
+
+export const VideoCardSkeleton = () => {
+  return (
+    <Skeleton className="bg-secondary-background aspect-square space-y-6 p-6">
+      <Skeleton className="bg-foreground/10 h-6 w-2/3 animate-pulse" />
+      <Skeleton className="bg-foreground/10 h-full w-full animate-pulse" />
+    </Skeleton>
+  );
+};

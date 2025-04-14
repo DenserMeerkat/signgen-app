@@ -5,9 +5,9 @@ import { useSearchParams } from "next/navigation";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useAppContext } from "@/context";
 import { toast } from "sonner";
-import { SparkleIcon, Loader2Icon } from "lucide-react";
+import { SparkleIcon, Loader2Icon, LoaderIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import VideoCard from "./video-card";
+import VideoCard, { VideoCardSkeleton } from "./video-card";
 
 const VideoOutput = () => {
   const searchParams = useSearchParams();
@@ -170,14 +170,22 @@ const VideoOutput = () => {
         className="mx-auto w-fit"
       >
         {isGenerating || createVideoMutation.isPending ? (
-          <Loader2Icon className="mr-2 animate-spin" />
+          <LoaderIcon className="animate-spin" />
         ) : (
-          <SparkleIcon className="mr-2" />
+          <SparkleIcon />
         )}
         {isGenerating || createVideoMutation.isPending
           ? "Generating..."
-          : "Generate Videos"}
+          : "Generate"}
       </Button>
+
+      {isGenerating && (
+        <div className="mt-6 grid grid-cols-1 gap-6 md:grid-cols-3">
+          <VideoCardSkeleton />
+          <VideoCardSkeleton />
+          <VideoCardSkeleton />
+        </div>
+      )}
 
       {shouldShowVideos && (
         <div className="mt-6 grid grid-cols-1 gap-6 md:grid-cols-3">

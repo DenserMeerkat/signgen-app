@@ -4,7 +4,7 @@ import { Suspense } from "react";
 
 export default function Home() {
   return (
-    <main className="my-12">
+    <main className="my-10">
       <div className="flex flex-col items-center justify-center">
         <Suspense>
           <WordInput />
