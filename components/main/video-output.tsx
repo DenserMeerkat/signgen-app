@@ -5,7 +5,7 @@ import { useSearchParams } from "next/navigation";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useAppContext } from "@/context";
 import { toast } from "sonner";
-import { SparkleIcon, Loader2Icon, LoaderIcon } from "lucide-react";
+import { SparkleIcon, LoaderIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import VideoCard, { VideoCardSkeleton } from "./video-card";
 
