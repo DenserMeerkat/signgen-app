@@ -15,6 +15,11 @@ const defaults: ConfigType = {
   cganPath: "cgan-video",
   cvaePath: "cvae-video",
   fusedPath: "fuse-video",
+  performancePath: "performance",
+  showCgan: false,
+  showCvae: false,
+  showFused: true,
+  showPerformance: true,
 };
 
 interface AppState {

@@ -5,9 +5,10 @@ import { useSearchParams } from "next/navigation";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useAppContext } from "@/context";
 import { toast } from "sonner";
-import { SparkleIcon, LoaderIcon } from "lucide-react";
+import { SparkleIcon, LoaderIcon, BarChart3Icon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import VideoCard, { VideoCardSkeleton } from "./video-card";
+import PerformanceMetrics from "./performance-metrics";
 
 const VideoOutput = () => {
   const searchParams = useSearchParams();
@@ -66,6 +67,26 @@ const VideoOutput = () => {
     },
   });
 
+  const performanceQuery = useQuery({
+    queryKey: ["performance"],
+    queryFn: async () => {
+      try {
+        const res = await fetch(`${baseUrl}/${config.performancePath}`);
+        if (!res.ok) throw new Error("Performance metrics not available");
+        return res.json();
+      } catch (error) {
+        toast.error("Error loading performance metrics");
+        throw error;
+      }
+    },
+    enabled:
+      config.showPerformance &&
+      isGenerating === false &&
+      createVideoMutation.isSuccess,
+    refetchOnWindowFocus: false,
+    retry: 1,
+  });
+
   const cganVideoQuery = useQuery({
     queryKey: ["videos", "cgan", word],
     queryFn: async () => {
@@ -79,6 +100,7 @@ const VideoOutput = () => {
       }
     },
     enabled:
+      config.showCgan &&
       isGenerating === false &&
       !!word &&
       createVideoMutation.isSuccess &&
@@ -100,6 +122,7 @@ const VideoOutput = () => {
       }
     },
     enabled:
+      config.showCvae &&
       isGenerating === false &&
       !!word &&
       createVideoMutation.isSuccess &&
@@ -121,6 +144,7 @@ const VideoOutput = () => {
       }
     },
     enabled:
+      config.showFused &&
       isGenerating === false &&
       !!word &&
       createVideoMutation.isSuccess &&
@@ -160,6 +184,19 @@ const VideoOutput = () => {
   const shouldShowVideos =
     createVideoMutation.isSuccess && word === generatedWord;
 
+  const enabledVideosCount = [
+    config.showCgan,
+    config.showCvae,
+    config.showFused,
+  ].filter(Boolean).length;
+
+  const gridColumns =
+    enabledVideosCount === 1
+      ? "grid-cols-1"
+      : enabledVideosCount === 2
+        ? "grid-cols-1 md:grid-cols-2"
+        : "grid-cols-1 md:grid-cols-3";
+
   return (
     <div className="container mx-auto mt-8 flex max-w-7xl flex-col p-4">
       <Button
@@ -170,9 +207,9 @@ const VideoOutput = () => {
         className="mx-auto w-fit"
       >
         {isGenerating || createVideoMutation.isPending ? (
-          <LoaderIcon className="animate-spin" />
+          <LoaderIcon className="mr-2 animate-spin" />
         ) : (
-          <SparkleIcon />
+          <SparkleIcon className="mr-2" />
         )}
         {isGenerating || createVideoMutation.isPending
           ? "Generating..."
@@ -180,32 +217,57 @@ const VideoOutput = () => {
       </Button>
 
       {isGenerating && (
-        <div className="mt-6 grid grid-cols-1 gap-6 md:grid-cols-3">
-          <VideoCardSkeleton />
-          <VideoCardSkeleton />
-          <VideoCardSkeleton />
+        <div className={`mt-6 grid ${gridColumns} gap-6`}>
+          {config.showCgan && <VideoCardSkeleton />}
+          {config.showCvae && <VideoCardSkeleton />}
+          {config.showFused && <VideoCardSkeleton />}
         </div>
       )}
 
       {shouldShowVideos && (
-        <div className="mt-6 grid grid-cols-1 gap-6 md:grid-cols-3">
-          <VideoCard
-            title="cGAN Model Output"
-            isLoading={cganVideoQuery.isPending}
-            videoUrl={cganVideoUrl}
-          />
+        <div className={`mt-6 grid ${gridColumns} gap-6`}>
+          {config.showCgan && (
+            <VideoCard
+              title="cGAN Model Output"
+              isLoading={cganVideoQuery.isPending}
+              videoUrl={cganVideoUrl}
+            />
+          )}
 
-          <VideoCard
-            title="cVAE Model Output"
-            isLoading={cvaeVideoQuery.isPending}
-            videoUrl={cvaeVideoUrl}
-          />
+          {config.showCvae && (
+            <VideoCard
+              title="cVAE Model Output"
+              isLoading={cvaeVideoQuery.isPending}
+              videoUrl={cvaeVideoUrl}
+            />
+          )}
 
-          <VideoCard
-            title="Fused Output"
-            isLoading={fuseVideoQuery.isPending}
-            videoUrl={fuseVideoUrl}
-          />
+          {config.showFused && (
+            <VideoCard
+              title="Fused Output"
+              isLoading={fuseVideoQuery.isPending}
+              videoUrl={fuseVideoUrl}
+            />
+          )}
+        </div>
+      )}
+
+      {config.showPerformance && shouldShowVideos && (
+        <div className="mt-8">
+          <div className="mb-4 flex items-center">
+            <BarChart3Icon className="mr-2" />
+            <h2 className="text-xl font-semibold">Performance Metrics</h2>
+          </div>
+
+          {performanceQuery.isPending ? (
+            <div className="h-32 w-full animate-pulse rounded-lg bg-gray-200 dark:bg-gray-700"></div>
+          ) : performanceQuery.isError ? (
+            <div className="rounded-lg bg-red-50 p-4 text-red-600 dark:bg-red-900/20 dark:text-red-400">
+              Failed to load performance metrics
+            </div>
+          ) : (
+            <PerformanceMetrics data={performanceQuery.data} />
+          )}
         </div>
       )}
     </div>
